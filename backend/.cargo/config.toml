@@ -1,0 +1,4 @@
+[build]
+# Two rustc processes keep peak memory below the practical limit of a 4 GB host.
+# Faster development machines can override this with CARGO_BUILD_JOBS.
+jobs = 2
