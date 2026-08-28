@@ -8,6 +8,6 @@ RUN touch src/main.rs && cargo build --release
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY --from=build /app/target/release/update-service-api /usr/local/bin/update-service-api
+COPY --from=build /app/target/release/update-service /usr/local/bin/update-service
 EXPOSE 8080
-CMD ["update-service-api"]
+CMD ["update-service"]
