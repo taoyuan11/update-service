@@ -105,9 +105,9 @@ async fn bootstrap_admin(db: &PgPool, config: &Config) -> Result<(), ApiError> {
             "INITIAL_ADMIN_USERNAME is invalid".into(),
         ));
     }
-    if password.len() < 12 {
+    if password.is_empty() {
         return Err(ApiError::Internal(
-            "INITIAL_ADMIN_PASSWORD must be at least 12 characters".into(),
+            "INITIAL_ADMIN_PASSWORD must not be empty".into(),
         ));
     }
     let hash = auth::password_hash(password)?;

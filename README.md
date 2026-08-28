@@ -6,7 +6,7 @@
 
 ```bash
 cp .env.example .env
-# 编辑 .env，至少替换 INITIAL_ADMIN_PASSWORD（至少 12 位）和 SETTINGS_MASTER_KEY
+# 编辑 .env，至少替换 INITIAL_ADMIN_PASSWORD 和 SETTINGS_MASTER_KEY
 openssl rand -base64 32
 docker compose up --build
 ```

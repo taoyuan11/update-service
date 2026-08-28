@@ -2108,10 +2108,10 @@ fn validate_username(value: &str) -> Result<(), ApiError> {
     }
 }
 fn validate_password(value: &str) -> Result<(), ApiError> {
-    if value.len() >= 12 && value.len() <= 256 {
+    if !value.is_empty() {
         Ok(())
     } else {
-        Err(ApiError::validation("Password must be 12-256 characters"))
+        Err(ApiError::validation("Password must not be empty"))
     }
 }
 fn validate_role(value: &str) -> Result<(), ApiError> {
@@ -2191,6 +2191,12 @@ mod tests {
         assert!(validate_migration_direction("local", "s3").is_ok());
         assert!(validate_migration_direction("local", "local").is_err());
         assert!(validate_migration_direction("unknown", "s3").is_err());
+    }
+    #[test]
+    fn password_length_is_unrestricted_but_empty_passwords_are_rejected() {
+        assert!(validate_password("a").is_ok());
+        assert!(validate_password(&"a".repeat(257)).is_ok());
+        assert!(validate_password("").is_err());
     }
     #[test]
     fn migration_retries_use_exponential_backoff() {
