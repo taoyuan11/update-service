@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: update_service
+      POSTGRES_USER: update_service
+      POSTGRES_PASSWORD: change-me
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U update_service -d update_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Allow deployments to point at an external database through .env while
+      # retaining the bundled Postgres service as the local-development default.
+      DATABASE_URL: ${DATABASE_URL:-postgres://update_service:change-me@postgres:5432/update_service}
+      APP_BIND: ${APP_BIND:-0.0.0.0:8080}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8088}
+    volumes:
+      - application_files:/var/lib/update-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - "8088:80"
+    depends_on:
+      - api
+
+  minio:
+    image: minio/minio:latest
+    profiles: ["s3"]
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+volumes:
+  postgres_data:
+  application_files:
+  minio_data:
