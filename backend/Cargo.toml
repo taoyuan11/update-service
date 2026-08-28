@@ -3,6 +3,10 @@ name = "update-service-api"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "update-service"
+path = "src/main.rs"
+
 [dependencies]
 aes-gcm = "0.10"
 argon2 = "0.5"
@@ -31,3 +35,16 @@ tower-http = { version = "0.6", features = ["cors", "trace", "limit"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uuid = { version = "1", features = ["v4", "serde"] }
+
+
+[profile.dev]
+# Debug info is expensive to generate and link on low-memory deployment hosts.
+debug = 0
+
+[profile.test]
+debug = 0
+
+[profile.release]
+# Preserve optimized runtime code while allowing repeated production builds to
+# reuse unchanged code-generation units from the Docker target cache.
+incremental = true
